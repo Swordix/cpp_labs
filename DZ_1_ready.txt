@@ -1,0 +1,120 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+class String
+{
+	unsigned size = 0;
+	char *str = nullptr;
+public:
+	String(const char *s)
+	{
+		if (s&&*s)
+		{
+			size = strlen(s) + 1;
+			str = new char[size];
+			strcpy_s(str, size, s);
+		}
+	}
+	void Print()
+	{
+		cout << str << endl;
+	}
+	const char* Get_str()
+	{
+		return str;
+	}
+	void BigLetter()
+	{
+		_strupr_s(str, size);
+	}
+	void SmallLetter()
+	{
+		_strlwr_s(str, size);
+	}
+	int Length()
+	{
+		return strlen(str);
+	}
+	void Insert(char, unsigned);
+	void Ascii();
+	void Assign(const char *s);
+	void Concat(const char *s);
+	~String()
+	{
+		if (str)
+			delete[] str;
+		str = nullptr;
+	}
+};
+
+void String::Insert(char symb, unsigned poz)
+{
+	if (poz < size && poz>0)
+	{
+		++size;
+		char * new_str = new char[size];
+		for (int i = 0; i < size; ++i)
+		{
+			if (i < poz)
+				new_str[i] = str[i];
+			else if (i == poz)
+				new_str[i] = symb;
+			else
+				new_str[i] = str[i - 1];
+		}
+		delete[] str;
+		str = new_str;
+	}
+	else cout << "Не существующая позиция!" << endl;
+}
+
+void String::Ascii()
+{
+	int code;
+	for (int i = 0; i < size - 1; ++i)
+	{
+		code = (int)str[i];
+		cout << str[i] << "  ASCII код = " << code << endl;
+	}
+}
+
+void String::Assign(const char *s)
+{
+	size = strlen(s) + 1;
+	delete[] str;
+	str = new char[size];
+	strcpy_s(str, size, s);
+}
+
+void String::Concat(const char *s)
+{
+	size += strlen(s);
+	char* new_str = new char[size];
+	strcpy_s(new_str, size, str);
+	strcat_s(new_str, size, s);
+	delete[] str;
+	str = new_str;
+}
+
+int main()
+{
+	setlocale(LC_CTYPE, "rus");
+	String str = "Hello";
+	str.Print();
+	str.Assign("Hello people");
+	str.Print();
+	str.Concat(", how do you do?");
+	cout << str.Get_str() << endl;
+	cout << "Длина строки = " << str.Length() << endl;
+	str.BigLetter();
+	cout << "Верхний регистр: " << str.Get_str() << endl;
+	str.SmallLetter();
+	cout << "Нижний регистр: " << str.Get_str() << endl;
+	cout << "Вставка символа:" << endl;
+	str.Insert('F', 5);
+	cout << str.Get_str() << endl << endl;
+	cout << "ASCII код:" << endl;
+	str.Ascii();
+	return 0;
+}
