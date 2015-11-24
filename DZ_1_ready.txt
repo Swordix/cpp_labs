@@ -66,7 +66,7 @@ void String::Insert(char symb, unsigned poz)
 		delete[] str;
 		str = new_str;
 	}
-	else cout << "There is no position!" << endl;
+	else cout << "Не существующая позиция!" << endl;
 }
 
 void String::Ascii()
@@ -75,7 +75,7 @@ void String::Ascii()
 	for (int i = 0; i < size - 1; ++i)
 	{
 		code = (int)str[i];
-		cout << str[i] << "  ASCII code = " << code << endl;
+		cout << str[i] << "  ASCII код = " << code << endl;
 	}
 }
 
@@ -99,21 +99,22 @@ void String::Concat(const char *s)
 
 int main()
 {
+	setlocale(LC_CTYPE, "rus");
 	String str = "Hello";
 	str.Print();
 	str.Assign("Hello people");
 	str.Print();
 	str.Concat(", how do you do?");
 	cout << str.Get_str() << endl;
-	cout << "Lenght = " << str.Length() << endl;
+	cout << "Длина строки = " << str.Length() << endl;
 	str.BigLetter();
-	cout << "High Letter: " << str.Get_str() << endl;
+	cout << "Верхний регистр: " << str.Get_str() << endl;
 	str.SmallLetter();
-	cout << "lower Letter: " << str.Get_str() << endl;
-	cout << "Insert Character:" << endl;
+	cout << "Нижний регистр: " << str.Get_str() << endl;
+	cout << "Вставка символа:" << endl;
 	str.Insert('F', 5);
 	cout << str.Get_str() << endl << endl;
-	cout << "ASCII code:" << endl;
+	cout << "ASCII код:" << endl;
 	str.Ascii();
 	return 0;
 }
