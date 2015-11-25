@@ -88,6 +88,8 @@ void String::Assign(const char* s)
 		str = new char[size];
 		strcpy_s(str, size, s);
 	}
+	else
+		cout << "no starting line" << endl;
 }
 
 void String::Concat(const char* s)
