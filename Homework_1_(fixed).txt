@@ -43,8 +43,10 @@ public:
 	~String()
 	{
 		if (str)
+		{
 			delete[] str;
-		str = nullptr;
+			str = nullptr;
+		}
 	}
 };
 
