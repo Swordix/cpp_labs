@@ -1,0 +1,258 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+using namespace std;
+
+
+
+class UniqueResource
+{
+	char* res = nullptr;
+	int size = 0;
+public:
+	UniqueResource(const UniqueResource&) = delete;
+	UniqueResource& operator=(const UniqueResource&) = delete;
+	UniqueResource() : res(nullptr), size(0)
+	{}
+	UniqueResource(char* res_) : UniqueResource()
+	{
+		if (res_ && *res_)
+		{
+			size = strlen(res_) + 1;
+			res = new char[size];
+			strcpy_s(res, size, res_);
+		}
+	}
+	~UniqueResource()
+	{
+		if (res)
+		{
+			delete[] res;
+			res = nullptr;
+		}
+	}
+	const char* GetRes() const
+	{
+		if (res && *res)
+		{
+			return res;
+		}
+		return "No Resource";
+	}
+};
+
+class JointResource
+{
+	char* res = nullptr;
+	int size = 0;
+	unsigned* counter = nullptr;
+public:
+	JointResource() : counter(nullptr), size(0), res(nullptr)
+	{}
+	JointResource(JointResource& res_) : size(res_.size)
+	{
+		if (&res_ != this)
+		{
+			counter = res_.counter;
+			++(*counter);
+			res = res_.res;
+		}
+	}
+	bool operator= (const JointResource& res_)
+	{
+		if (this != &res_)
+		{
+			if (this->GetRes() != res_.GetRes())
+			{
+				counter = res_.counter;
+				++(*counter);
+				size = res_.size;
+				res = res_.res;
+				return 1;
+			}
+		}
+		return 0;
+	}
+	JointResource(char* res_) : size(strlen(res_) + 1), counter(nullptr)
+	{
+		if (res_ && *res_)
+		{
+			res = new char[size];
+			strcpy_s(res, size, res_);
+			counter = new unsigned(1);
+		}
+	}
+	~JointResource()
+	{
+		--(*counter);
+		if (*counter == 0 && res)
+			delete[] res;
+		res = nullptr;
+	}
+	char* GetRes() const
+	{
+		if (res && *res)
+			return res;
+		else
+			return "No Resource";
+
+	}
+
+};
+
+class TransferResource
+{
+	char* res = nullptr;
+	int size = 0;
+public:
+	TransferResource() : res(nullptr), size(0)
+	{}
+	TransferResource(TransferResource& res_)
+	{
+		if (this != &res_)
+		{
+			if (res_.res)
+			{
+				size = res_.size;
+				res = new char[size];
+				strcpy_s(res, size, res_.res);
+				res_.size = 0;
+				res_.res = nullptr;
+			}
+		}
+	}
+	bool operator=(TransferResource& res_)
+	{
+		if (this != &res_)
+		{
+			if (res_.res)
+			{
+				size = res_.size;
+				res = new char[size];
+				strcpy_s(res, size, res_.res);
+				res_.size = 0;
+				res_.res = nullptr;
+				return 1;
+			}
+		}
+		return 0;
+	}
+	TransferResource(char* res_) : res(nullptr)
+	{
+		if (res_ && *res_)
+		{
+			size = strlen(res_) + 1;
+			res = new char(size);
+			strcpy_s(res, size, res_);
+		}
+	}
+	~TransferResource()
+	{
+		if (res&&*res)
+		{
+			delete res;
+			res = nullptr;
+		}
+	}
+	const char* GetRes() const
+	{
+		if (res && *res)
+			return res;
+		else
+			return "No Resource";
+	}
+
+};
+
+int main()
+{
+	int selected;
+	do
+	{
+		cout << "1 - Co-ownership of resource" << endl
+			 << "2 - Unique resource" << endl
+			 << "3 - Rights to the resource" << endl;
+		cout << "Select: ";
+		cin >> selected;
+		if (selected == 1)
+		{
+			cout << "This is co-ownership of resource:" << endl;
+			JointResource res("Hi!");
+			cout << "JointResource res(\"Hi!\");" << endl;
+			cout << res.GetRes() << endl;
+
+			JointResource res1 = res;
+			cout << "JointResource res1 = res;" << endl;
+			cout << "res1:" << endl;
+			cout << res1.GetRes() << endl;
+			JointResource res2;
+
+			cout << "JointResource res2;" << endl;
+			cout << "res2:" << endl;
+			cout << res2.GetRes() << endl;
+			res2 = res1;
+			cout << "res2 = res1;" << endl << "res2" << endl;
+			cout << res2.GetRes();
+
+			res2.~JointResource();
+			cout << "res2.~JointResource();" << endl;
+			cout << "res2:" << endl;
+			cout << res2.GetRes() << endl;
+
+			res1.~JointResource();
+			cout << "res1.~JointResource();" << endl;
+			cout << "res1" << endl;
+			cout << res1.GetRes() << endl;
+
+			res.~JointResource();
+			cout << "res.~JointResource();" << endl;
+			cout << "res:" << endl;
+			cout << res.GetRes() << endl;
+			continue;
+		}
+
+		if (selected == 2)
+		{
+			cout << "Create a unique object:" << endl;
+			UniqueResource ures("Hello");
+			cout << "UniqueResource ures(\"Hello\");" << endl << "ures:" << endl;
+			cout << ures.GetRes() << endl;
+
+			cout << "Trying create a new obj and initialization by \"ures\"" << endl << "UniqueResource ures1 = ures;" << endl;
+			cout << "function UniqueResource::UniqueResource(UniqueResource &res_) cannot be referenced -- it is a deleted function" << endl;
+
+			cout << "Trying use operator = \"ures1 = ures\"" << endl;
+			cout << "function UniqueResource::operator=(const UniqueResource &res) cannot be referenced -- it is a deleted function" << endl;
+			continue;
+		}
+
+		if (selected == 3)
+		{
+			cout << endl << "This is transfer of rights to the resource demonstration:" << endl;
+			TransferResource tres("Hi!");
+			cout << "TransferResource tres(\"Hi!\");" << endl << "tres:" << endl;
+			cout << tres.GetRes() << endl;
+
+			TransferResource tres1 = tres;
+			cout << "TransferResource tres1 = tres;" << endl << "tres1:" << endl;
+			cout << tres1.GetRes() << endl;
+			cout << "tres:" << endl;
+			cout << tres.GetRes() << endl;
+			TransferResource tres2;
+			cout << "TransferResource tres2;" << endl << "tres2:" << endl;
+			cout << tres2.GetRes() << endl;
+			tres2 = tres1;
+			cout << "tres2 = tres1;" << endl;
+			cout << "tres2:" << endl;
+			cout << tres2.GetRes() << endl;
+			cout << "tres1:" << endl;
+			cout << tres1.GetRes() << endl;
+			continue;
+		}
+		else
+			break;
+
+	} while (true);
+
+	return 0;
+}
