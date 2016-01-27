@@ -51,7 +51,7 @@ public:
 	{}
 	JointResource(JointResource& res_) : size(res_.size)
 	{
-		if (&res_ != this)
+		if (&res_)
 		{
 			counter = res_.counter;
 			++(*counter);
@@ -117,6 +117,7 @@ public:
 				res = new char[size];
 				strcpy_s(res, size, res_.res);
 				res_.size = 0;
+				delete[] res_.res;
 				res_.res = nullptr;
 			}
 		}
@@ -131,6 +132,7 @@ public:
 				res = new char[size];
 				strcpy_s(res, size, res_.res);
 				res_.size = 0;
+				delete[] res_.res;
 				res_.res = nullptr;
 				return 1;
 			}
@@ -170,8 +172,8 @@ int main()
 	do
 	{
 		cout << "1 - Co-ownership of resource" << endl
-			 << "2 - Unique resource" << endl
-			 << "3 - Rights to the resource" << endl;
+			<< "2 - Unique resource" << endl
+			<< "3 - Rights to the resource" << endl << "0 - Exit" << endl;
 		cout << "Select: ";
 		cin >> selected;
 		if (selected == 1)
@@ -249,8 +251,10 @@ int main()
 			cout << tres1.GetRes() << endl;
 			continue;
 		}
-		else
+		if (selected == 0)
 			break;
+		else
+			cout << "Incorreñt choice" << endl;
 
 	} while (true);
 
